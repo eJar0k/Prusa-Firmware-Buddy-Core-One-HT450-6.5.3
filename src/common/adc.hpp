@@ -126,7 +126,7 @@ enum AD3 { // ADC3 channels
     board_I,
     #if PRINTER_IS_PRUSA_iX()
     case_T,
-    #elif PRINTER_IS_PRUSA_COREONE() || PRINTER_IS_PRUSA_MK4()
+    #elif PRINTER_IS_PRUSA_COREONE()
     door_sensor,
     #endif
     ADC3_CH_CNT
@@ -193,7 +193,7 @@ enum AD1 {
 #endif
 } // namespace AdcChannel
 
-inline constexpr uint16_t raw_adc_value_at_50_degreas_celsius = 993;
+inline constexpr uint16_t raw_adc_value_at_50_degreas_celsius = 3972;
 
 template <ADC_HandleTypeDef &adc, size_t channels>
 class AdcDma {
@@ -205,8 +205,6 @@ public:
     static constexpr uint16_t sample_bits = 12;
     static constexpr uint16_t sample_max = (1 << sample_bits) - 1;
 
-    // Shift bits required to reduce from the full 12bit resolution to 10bit as expected by Marlin
-    static constexpr uint16_t shift_bits = 2;
 
     AdcDma()
         : m_data() {}
@@ -265,7 +263,7 @@ public:
 
     // Downscale from ADC full resolution as required by Marlin
     [[nodiscard]] uint16_t get_and_shift_channel(uint8_t index) const {
-        return get_channel(index) >> shift_bits;
+        return get_channel(index);
     }
 
 private:
@@ -393,7 +391,7 @@ public:
 
     // Downscale from ADC full resolution as required by Marlin
     [[nodiscard]] uint16_t get_and_shift_channel(uint8_t index) {
-        return get_channel(index) >> ADCDMA::shift_bits;
+        return get_channel(index);
     }
 
 private:
@@ -449,7 +447,7 @@ inline uint16_t nozzle() {
 
         // decimate to match the behavior of get_and_shift_channel()
         auto raw_temp_avg = nozzle_ring_buff.GetSum() / nozzle_ring_buff.GetSize();
-        return raw_temp_avg >> adcDma1.shift_bits;
+        return raw_temp_avg;
     }
 
     return raw_temp;
@@ -479,7 +477,7 @@ inline uint16_t inputVoltage() {
     #if PRINTER_IS_PRUSA_iX()
 inline uint16_t psu_temp() { return adcDma1.get_and_shift_channel(AdcChannel::heatbed_T); }
 inline uint16_t ambient_temp() { return adcDma3.get_and_shift_channel(AdcChannel::case_T); }
-    #elif PRINTER_IS_PRUSA_COREONE() || PRINTER_IS_PRUSA_MK4()
+    #elif PRINTER_IS_PRUSA_COREONE()
 inline uint16_t door_sensor() { return adcDma3.get_channel(AdcChannel::door_sensor); }
     #endif
 

@@ -36,7 +36,6 @@
 #include "../core/language.h"
 #include "../HAL/shared/Delay.h"
 #include "bsod.h"
-#include "logging/log.hpp"
 #include "metric.h"
 #include "../../../../src/common/hwio.h"
 #include <stdint.h>
@@ -44,7 +43,6 @@
 #include "printers.h"
 #include "MarlinPin.h"
 #include "../../../../src/common/adc.hpp"
-#include "../marlin_stubs/skippable_gcode.hpp"
 #include <option/has_chamber_api.h>
 #if HAS_CHAMBER_API()
 #include "feature/chamber/chamber.hpp"
@@ -92,11 +90,6 @@
 #if USE_BEEPER
   #include "../libs/buzzer.h"
 #endif
-
-#include <option/has_dwarf.h>
-#include <option/has_modularbed.h>
-
-LOG_COMPONENT_REF(MarlinServer);
 
 #if HOTEND_USES_THERMISTOR
   #if ENABLED(TEMP_SENSOR_1_AS_REDUNDANT)
@@ -246,10 +239,10 @@ Temperature thermalManager;
 #if HAS_TEMP_HEATBREAK
   heatbreak_info_t Temperature::temp_heatbreak[HOTENDS]; // = { 0 }
 
-  int16_t Temperature::mintemp_raw_HEATBREAK = HEATBREAK_RAW_LO_TEMP;
+  int32_t Temperature::mintemp_raw_HEATBREAK = HEATBREAK_RAW_LO_TEMP;
 
   #ifdef HEATBREAK_MAXTEMP
-    int16_t Temperature::maxtemp_raw_HEATBREAK = HEATBREAK_RAW_HI_TEMP;
+    int32_t Temperature::maxtemp_raw_HEATBREAK = HEATBREAK_RAW_HI_TEMP;
   #endif
 
   #if WATCH_HEATBREAK
@@ -262,25 +255,22 @@ Temperature thermalManager;
 #if HAS_TEMP_BOARD
   board_info_t Temperature::temp_board; // = { 0 }
 
-  int16_t Temperature::mintemp_raw_BOARD = BOARD_RAW_LO_TEMP;
+  int32_t Temperature::mintemp_raw_BOARD = BOARD_RAW_LO_TEMP;
 
   #ifdef BOARD_MAXTEMP
-    int16_t Temperature::maxtemp_raw_BOARD = BOARD_RAW_HI_TEMP;
+    int32_t Temperature::maxtemp_raw_BOARD = BOARD_RAW_HI_TEMP;
   #endif
 
 #endif
 
 #if HAS_HEATED_BED
   bed_info_t Temperature::temp_bed; // = { 0 }
-  float Temperature::bed_frame_est_celsius = TempInfo::celsius_uninitialized;
-  uint32_t Temperature::bed_frame_millis = 0;
-
   // Init min and max temp with extreme values to prevent false errors during startup
   #ifdef BED_MINTEMP
-    int16_t Temperature::mintemp_raw_BED = HEATER_BED_RAW_LO_TEMP;
+    int32_t Temperature::mintemp_raw_BED = HEATER_BED_RAW_LO_TEMP;
   #endif
   #ifdef BED_MAXTEMP
-    int16_t Temperature::maxtemp_raw_BED = HEATER_BED_RAW_HI_TEMP;
+    int32_t Temperature::maxtemp_raw_BED = HEATER_BED_RAW_HI_TEMP;
   #endif
   #if WATCH_BED
     heater_watch_t Temperature::watch_bed; // = { 0 }
@@ -297,10 +287,10 @@ Temperature thermalManager;
   chamber_info_t Temperature::temp_chamber; // = { 0 }
   #if HAS_HEATED_CHAMBER
     #ifdef CHAMBER_MINTEMP
-      int16_t Temperature::mintemp_raw_CHAMBER = HEATER_CHAMBER_RAW_LO_TEMP;
+      int32_t Temperature::mintemp_raw_CHAMBER = HEATER_CHAMBER_RAW_LO_TEMP;
     #endif
     #ifdef CHAMBER_MAXTEMP
-      int16_t Temperature::maxtemp_raw_CHAMBER = HEATER_CHAMBER_RAW_HI_TEMP;
+      int32_t Temperature::maxtemp_raw_CHAMBER = HEATER_CHAMBER_RAW_HI_TEMP;
     #endif
     #if WATCH_CHAMBER
       heater_watch_t Temperature::watch_chamber{0};
@@ -331,7 +321,7 @@ Temperature thermalManager;
 #endif
 
 #if ENABLED(TEMP_SENSOR_1_AS_REDUNDANT)
-  uint16_t Temperature::redundant_temperature_raw = 0;
+  uint32_t Temperature::redundant_temperature_raw = 0;
   float Temperature::redundant_temperature = 0.0;
 #endif
 
@@ -348,12 +338,12 @@ volatile bool Temperature::temp_meas_ready = false;
 
 #if HOTENDS
   // Init mintemp and maxtemp with extreme values to prevent false errors during startup
-  constexpr temp_range_t sensor_heater_0 { HEATER_0_RAW_LO_TEMP, HEATER_0_RAW_HI_TEMP, 0, 16383 },
-                         sensor_heater_1 { HEATER_1_RAW_LO_TEMP, HEATER_1_RAW_HI_TEMP, 0, 16383 },
-                         sensor_heater_2 { HEATER_2_RAW_LO_TEMP, HEATER_2_RAW_HI_TEMP, 0, 16383 },
-                         sensor_heater_3 { HEATER_3_RAW_LO_TEMP, HEATER_3_RAW_HI_TEMP, 0, 16383 },
-                         sensor_heater_4 { HEATER_4_RAW_LO_TEMP, HEATER_4_RAW_HI_TEMP, 0, 16383 },
-                         sensor_heater_5 { HEATER_5_RAW_LO_TEMP, HEATER_5_RAW_HI_TEMP, 0, 16383 };
+  constexpr temp_range_t sensor_heater_0 { HEATER_0_RAW_LO_TEMP, HEATER_0_RAW_HI_TEMP, 0, OSMPL(4096) },
+                         sensor_heater_1 { HEATER_1_RAW_LO_TEMP, HEATER_1_RAW_HI_TEMP, 0, OSMPL(4096) },
+                         sensor_heater_2 { HEATER_2_RAW_LO_TEMP, HEATER_2_RAW_HI_TEMP, 0, OSMPL(4096) },
+                         sensor_heater_3 { HEATER_3_RAW_LO_TEMP, HEATER_3_RAW_HI_TEMP, 0, OSMPL(4096) },
+                         sensor_heater_4 { HEATER_4_RAW_LO_TEMP, HEATER_4_RAW_HI_TEMP, 0, OSMPL(4096) },
+                         sensor_heater_5 { HEATER_5_RAW_LO_TEMP, HEATER_5_RAW_HI_TEMP, 0, OSMPL(4096) };
 
   temp_range_t Temperature::temp_range[HOTENDS] = ARRAY_BY_HOTENDS(sensor_heater_0, sensor_heater_1, sensor_heater_2, sensor_heater_3, sensor_heater_4, sensor_heater_5);
 #endif
@@ -878,10 +868,7 @@ void Temperature::_temp_error(const heater_ind_t heater, PGM_P const serial_msg,
     SERIAL_EOL();
   }
 
-  // Disable only the local heaters. We are in ISR, so we can't afford any kind
-  // of interprocessor communication and it would not finish anyway before we
-  // kill it.
-  disable_local_heaters(); // always disable (even for bogus temp)
+  disable_all_heaters(); // always disable (even for bogus temp)
 
   #if BOGUS_TEMPERATURE_GRACE_PERIOD
     const millis_t ms = millis();
@@ -1841,15 +1828,15 @@ void Temperature::suspend_heatbreak_fan(millis_t ms) {
   uint8_t l = 0, r = LEN, m;                                           \
   for (;;) {                                                           \
     m = (l + r) >> 1;                                                  \
-    if (!m) return short(pgm_read_word(&TBL[0][1]));                   \
-    if (m == l || m == r) return short(pgm_read_word(&TBL[LEN-1][1])); \
-    short v00 = pgm_read_word(&TBL[m-1][0]),                           \
+    if (!m) return int32_t(pgm_read_word(&TBL[0][1]));                   \
+    if (m == l || m == r) return int32_t(pgm_read_word(&TBL[LEN-1][1])); \
+    int32_t v00 = pgm_read_word(&TBL[m-1][0]),                           \
           v10 = pgm_read_word(&TBL[m-0][0]);                           \
          if (raw < v00) r = m;                                         \
     else if (raw > v10) l = m;                                         \
     else {                                                             \
-      const short v01 = short(pgm_read_word(&TBL[m-1][1])),            \
-                  v11 = short(pgm_read_word(&TBL[m-0][1]));            \
+      const int32_t v01 = int32_t(pgm_read_word(&TBL[m-1][1])),            \
+                  v11 = int32_t(pgm_read_word(&TBL[m-0][1]));            \
       return v01 + (raw - v00) * float(v11 - v01) / float(v10 - v00);  \
     }                                                                  \
   }                                                                    \
@@ -1996,7 +1983,7 @@ void Temperature::suspend_heatbreak_fan(millis_t ms) {
 #if HOTENDS
   // Derived from RepRap FiveD extruder::getTemperature()
   // For hot end temperature measurement.
-  float Temperature::analog_to_celsius_hotend(const int raw, const uint8_t e) {
+  float Temperature::analog_to_celsius_hotend(const int32_t raw, const uint8_t e) {
     #if ENABLED(TEMP_SENSOR_1_AS_REDUNDANT)
       if (e > HOTENDS)
     #else
@@ -2092,20 +2079,20 @@ void Temperature::suspend_heatbreak_fan(millis_t ms) {
 
     #if HOTEND_USES_THERMISTOR
       // Thermistor with conversion table?
-      const short(*tt)[][2] = (short(*)[][2])(heater_ttbl_map[e]);
+      const int32_t(*tt)[][2] = (int32_t(*)[][2])(heater_ttbl_map[e]);
       SCAN_THERMISTOR_TABLE((*tt), heater_ttbllen_map[e]);
     #endif
 
     return 0;
   }
 #endif // HOTENDS
-float scan_thermistor_table_bed(const int raw){
+float scan_thermistor_table_bed(const int32_t raw){
     SCAN_THERMISTOR_TABLE(BED_TEMPTABLE,BED_TEMPTABLE_LEN);
 }
 #if HAS_HEATED_BED
   // Derived from RepRap FiveD extruder::getTemperature()
   // For bed temperature measurement.
-  float Temperature::analog_to_celsius_bed(const int raw) {
+  float Temperature::analog_to_celsius_bed(const int32_t raw) {
     #if ENABLED(HEATER_BED_USER_THERMISTOR)
       return user_thermistor_to_deg_c(CTI_BED, raw);
     #elif ENABLED(HEATER_BED_USES_THERMISTOR)
@@ -2146,7 +2133,7 @@ float scan_thermistor_table_bed(const int raw){
 #if HAS_TEMP_CHAMBER
   // Derived from RepRap FiveD extruder::getTemperature()
   // For chamber temperature measurement.
-  float Temperature::analog_to_celsius_chamber(const int raw) {
+  float Temperature::analog_to_celsius_chamber(const int32_t raw) {
     #if ENABLED(HEATER_CHAMBER_USER_THERMISTOR)
       return user_thermistor_to_deg_c(CTI_CHAMBER, raw);
     #elif ENABLED(HEATER_CHAMBER_USES_THERMISTOR)
@@ -2164,7 +2151,7 @@ float scan_thermistor_table_bed(const int raw){
 #if HAS_TEMP_HEATBREAK
   // Derived from RepRap FiveD extruder::getTemperature()
   // For heatbreak temperature measurement.
-  float Temperature::analog_to_celsius_heatbreak(const int raw) {
+  float Temperature::analog_to_celsius_heatbreak(const int32_t raw) {
     #if ENABLED(HEATBREAK_USER_THERMISTOR)
       return user_thermistor_to_deg_c(CTI_HEATBREAK, raw);
     #elif ENABLED(HEATBREAK_USES_THERMISTOR)
@@ -2188,7 +2175,7 @@ float scan_thermistor_table_bed(const int raw){
 #if HAS_TEMP_BOARD
   // Derived from RepRap FiveD extruder::getTemperature()
   // For ambient temperature measurement.
-  float Temperature::analog_to_celsius_board(const int raw) {
+  float Temperature::analog_to_celsius_board(const int32_t raw) {
     #if ENABLED(BOARD_USER_THERMISTOR)
       return user_thermistor_to_deg_c(CTI_BOARD, raw);
     #elif ENABLED(BOARD_USES_THERMISTOR)
@@ -2225,26 +2212,7 @@ void Temperature::updateTemperaturesFromRawValues() {
     #else
       temp_bed.celsius = analog_to_celsius_bed(temp_bed.raw);
     #endif
-
-    uint32_t now_millis = millis();
-    if (temp_bed.celsius > 0.0f) {
-      if (bed_frame_est_celsius < 0.0f) {
-        init_bed_frame_est_celsius();
-      } else {
-        float dt = (now_millis - bed_frame_millis) / 1000.0f;
-
-        // A linear function that reaches estimated bed frame temperature after
-        // about 150s for 60C and about 10 minutes for 100C if starting with a
-        // cold bed. With a bed already partially warmed, the time is
-        // proportionally shorter.
-        float step = (0.06f + (100.0f - temp_bed.celsius) * 0.0015f) * dt;
-        bed_frame_est_celsius += std::clamp(temp_bed.celsius - bed_frame_est_celsius, -step, step);
-      }
-    }
-
-    bed_frame_millis = now_millis;
   #endif
-
   #if HAS_TEMP_CHAMBER
     temp_chamber.celsius = analog_to_celsius_chamber(temp_chamber.raw);
   #endif
@@ -2797,18 +2765,6 @@ void Temperature::disable_hotend() {
 
 }
 
-void Temperature::disable_local_heaters() {
-#if HAS_DWARF() && HAS_MODULARBED()
-    // No local heater present
-#elif !HAS_DWARF() && HAS_MODULARBED()
-    disable_hotend();
-#elif !HAS_DWARF() && !HAS_MODULARBED()
-    disable_all_heaters();
-#else
-#error "Don't know how to disable the bed but not dwarf"
-#endif
-}
-
 void Temperature::disable_heaters(Temperature::disable_bed_t disable_bed) {
 
   #if ENABLED(AUTOTEMP)
@@ -3156,7 +3112,7 @@ void Temperature::readings_ready() {
     for (uint8_t e = 0; e < COUNT(temp_dir); e++) {
       const int8_t tdir = temp_dir[e];
       if (tdir) {
-        [[maybe_unused]] const int16_t rawtemp = temp_hotend[e].raw * tdir; // normal direction, +rawtemp, else -rawtemp
+        [[maybe_unused]] const int32_t rawtemp = temp_hotend[e].raw * tdir; // normal direction, +rawtemp, else -rawtemp
         const bool heater_on = (temp_hotend[e].target > 0
           #if ENABLED(PIDTEMP)
             || temp_hotend[e].soft_pwm_amount > 0
@@ -4196,52 +4152,6 @@ void Temperature::isr() {
       if (wait_for_heatup) ui.reset_status();
 
       return wait_for_heatup;
-    }
-
-    void Temperature::init_bed_frame_est_celsius() {
-        static constexpr float room_temperature = 25.0f;
-
-        if (temp_bed.celsius < room_temperature) {
-          // If around room temperature, init directly to bed temperature
-          bed_frame_est_celsius = temp_bed.celsius;
-        } else {
-          // If over room temp, init with a fraction of the current temp that's
-          // over room temperature, as a crude estimation of how the bed frame
-          // has been heated up
-          bed_frame_est_celsius = room_temperature + (temp_bed.celsius - room_temperature) * 0.7f;
-        }
-    }
-
-    void Temperature::wait_for_frame_heatup() {
-        if (abs(temp_bed.target - bed_frame_est_celsius) < 0.5f) {
-            log_info(MarlinServer, "Absorbing heat: already stable, continuing");
-            return;
-        }
-
-        SkippableGCode::Guard skippable_operation;
-
-        static constexpr uint32_t message_interval = 1000;
-        uint32_t last_message_timestamp = millis() - message_interval;
-
-        const float start_diff = temp_bed.target - bed_frame_est_celsius;
-        while (abs(temp_bed.target - bed_frame_est_celsius) > 0.5f && !skippable_operation.is_skip_requested()) {
-            // Check if we're aborting
-            if (planner.draining()) {
-                break;
-            }
-
-            idle(true);
-
-            // make sure we don't turn off the motors
-            gcode.reset_stepper_timeout();
-
-            if (millis() - last_message_timestamp > message_interval) {
-                MarlinUI::status_printf_P(0, "Absorbing heat\n%u%%", 100 - static_cast<uint8_t>((temp_bed.target - bed_frame_est_celsius) / start_diff * 100));
-                last_message_timestamp = millis();
-            }
-        }
-
-        MarlinUI::reset_status();
     }
 
   #endif // HAS_HEATED_BED
