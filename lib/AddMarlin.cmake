@@ -38,6 +38,7 @@ if(BOARD_IS_MASTER_BOARD)
     PRIVATE Marlin/Marlin/src/core/multi_language.cpp
             Marlin/Marlin/src/feature/babystep.cpp
             Marlin/Marlin/src/feature/backlash.cpp
+            Marlin/Marlin/src/feature/bed_preheat.cpp
             Marlin/Marlin/src/feature/bedlevel/abl/abl.cpp
             Marlin/Marlin/src/feature/bedlevel/bedlevel.cpp
             Marlin/Marlin/src/feature/bedlevel/mbl/mesh_bed_leveling.cpp
@@ -200,7 +201,6 @@ if(BOARD_IS_MASTER_BOARD)
   endif()
   if(HAS_LOCAL_ACCELEROMETER)
     target_sources(Marlin PRIVATE Marlin/Marlin/src/module/prusa/accelerometer_local.cpp)
-    target_link_libraries(Marlin PRIVATE LIS2DH12)
   endif()
   if(HAS_REMOTE_ACCELEROMETER)
     target_sources(
@@ -261,9 +261,8 @@ if(BOARD_IS_MASTER_BOARD)
       Marlin
       PRIVATE Marlin/Marlin/src/feature/phase_stepping/calibration.cpp
               Marlin/Marlin/src/feature/phase_stepping/phase_stepping.cpp
-              Marlin/Marlin/src/gcode/feature/phase_stepping/M97x.cpp
+              Marlin/Marlin/src/gcode/feature/phase_stepping/M970-M977.cpp
       )
-    target_link_libraries(Marlin PRIVATE sfl-library)
   endif()
 endif()
 
@@ -276,7 +275,7 @@ target_link_libraries(
   Marlin PUBLIC Arduino::Core Arduino::TMCStepper Marlin_Config error_codes marlin_server_types
                 SG14
   )
-target_link_libraries(Marlin PRIVATE CppStdExtensions logging freertos buddy_utils)
+target_link_libraries(Marlin PRIVATE CppStdExtensions logging freertos)
 
 if(HAS_XBUDDY_EXTENSION)
   target_link_libraries(Marlin PUBLIC XBuddyExtensionShared)
