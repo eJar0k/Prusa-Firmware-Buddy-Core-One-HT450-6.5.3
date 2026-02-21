@@ -263,7 +263,14 @@ if(BOARD_IS_MASTER_BOARD)
               Marlin/Marlin/src/feature/phase_stepping/phase_stepping.cpp
               Marlin/Marlin/src/gcode/feature/phase_stepping/M97x.cpp
       )
+	  
   endif()
+  
+  # LIS2DH12 driver (needed by LIS2DH12Poller / accelerometer_local)
+    target_sources(Marlin PRIVATE
+  ${CMAKE_SOURCE_DIR}/lib/Drivers/lis2dh12-pid/lis2dh12_reg.c
+       )
+  
 endif()
 
 target_compile_features(Marlin PUBLIC cxx_std_17)
