@@ -270,6 +270,8 @@ target_compile_features(Marlin PUBLIC cxx_std_17)
 target_include_directories(
   Marlin PUBLIC Marlin/Marlin/src Marlin/Marlin/src/gcode/lcd Marlin/Marlin Marlin
   ${CMAKE_SOURCE_DIR}/src/module/utils
+  ${CMAKE_SOURCE_DIR}/lib/sfl-library/include
+  ${CMAKE_SOURCE_DIR}/lib/Drivers/lis2dh12-pid
   )
 
 target_link_libraries(
