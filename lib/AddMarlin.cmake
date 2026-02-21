@@ -261,7 +261,7 @@ if(BOARD_IS_MASTER_BOARD)
       Marlin
       PRIVATE Marlin/Marlin/src/feature/phase_stepping/calibration.cpp
               Marlin/Marlin/src/feature/phase_stepping/phase_stepping.cpp
-              Marlin/Marlin/src/gcode/feature/phase_stepping/M970-M977.cpp
+              Marlin/Marlin/src/gcode/feature/phase_stepping/M97x.cpp
       )
   endif()
 endif()
@@ -273,6 +273,7 @@ target_include_directories(
   ${CMAKE_SOURCE_DIR}/lib/sfl-library/include
   ${CMAKE_SOURCE_DIR}/lib/Drivers/lis2dh12-pid
   )
+target_compile_definitions(Marlin PUBLIC SFL_NO_EXCEPTIONS=1)
 
 target_link_libraries(
   Marlin PUBLIC Arduino::Core Arduino::TMCStepper Marlin_Config error_codes marlin_server_types
