@@ -40,30 +40,32 @@ This repo builds on the above work. My contributions are primarily the **CORE On
 - `+2636.HT450`
 - `+10523.HT450`
 
-## Example:
-- py utils/build.py --preset coreone --build-type release --version-suffix "+2636.HT450"
-
 ## Build (Windows / Linux)
 
 From repo root:
 - py utils/build.py --preset coreone --build-type release --version-suffix "+2636.HT450"
 
 ## This will create two variants:
+
 - coreone_release_boot
 - coreone_release_noboot
 
 ## Build outputs are usually under:
+
 - build/coreone_release_boot/
 - build/coreone_release_noboot/
 
 ## Look for a file named similar to:
+
 - firmware.bbf
 
-## Tip: 
--You can rename the .bbf file for convenience (e.g. COREONE_firmware_6.3.4_HT450.bbf).
--The printer cares about the contents, not the filename.
+## Tip for choosing a name: 
+
+- You can rename the .bbf file for convenience (e.g. COREONE_firmware_6.3.4_HT450.bbf).
+- The printer cares about the contents, not the filename.
 
 ## Which binary should I flash? (boot vs noboot)
+
 - noboot: firmware without bundled bootloader update.
 - boot: firmware that includes bootloader-related packaging.
 
