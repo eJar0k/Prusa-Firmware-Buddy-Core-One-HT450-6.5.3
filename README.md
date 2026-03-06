@@ -65,20 +65,28 @@ From repo root:
 - firmware.bbf
 
 ---
-
-## Which binary should I flash? (boot vs noboot)
-
-- noboot: firmware without bundled bootloader update.
-- boot: firmware that includes bootloader-related packaging.
-
-- In practice, flashing depends on your device state and constraints (e.g., service/dev mode, seal, signing).
-- If you are unsure: start with noboot.
+# Flash Firmware
 
 ## Unsigned firmware / flashing note
 
 - By default, developer builds may be unsigned (depending on your build configuration).
 - Many devices require enabling developer/service procedures (and sometimes breaking a seal) before accepting unsigned firmware.
 - Proceed only if you understand the implications.
+
+![Siegel](https://github.com/user-attachments/assets/2333b634-ed8b-4fc4-82ad-481ec49b7819)
+
+
+## Which binary should I flash? (boot vs noboot)
+
+- I was only able to successfully flash the modified firmware with the “boot” version.
+- In practice, flashing depends on your device state and constraints (e.g., service/dev mode, seal, signing).
+- If you are unsure: start with noboot.
+- You must confirm the unsigned firmware with “ignore” using the side dial.
+
+![Ignore](https://github.com/user-attachments/assets/1e54020e-2029-4d04-a9fb-67006b91533a)
+  
+---
+# IMPORTANT
 
 ## License
 
@@ -88,8 +96,7 @@ From repo root:
 
 ## Support / Issues
 
-- If you open issues, please include:
-
+If you open issues, please include:
 - Exact printer model (CORE One)
 - Your firmware version string (shown in menu)
 - Whether you flashed boot or noboot
