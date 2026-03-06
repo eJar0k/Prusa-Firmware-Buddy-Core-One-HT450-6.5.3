@@ -49,13 +49,8 @@ This repo builds on the above work. My contributions are primarily the **CORE On
 
 # Build (Windows / Linux)
 
-From repo root:
+## From repo root:
 - py utils/build.py --preset coreone --build-type release --version-suffix "+2636.HT450"
-
-## This will create two variants:
-
-- coreone_release_boot
-- coreone_release_noboot
 
 ## Build outputs are usually under:
 
