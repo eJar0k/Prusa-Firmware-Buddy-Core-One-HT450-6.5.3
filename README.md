@@ -35,12 +35,17 @@ This repo builds on the above work. My contributions are primarily the **CORE On
 - Some setups validate the printer firmware “version string” when sending jobs.  
 - If the suffix format is unexpected, you may get **print host / upload / send-to-printer errors**.
 
+![Fehlermeldung](https://github.com/user-attachments/assets/345394b0-c230-4b4c-9e30-fc70c107f82a)
+
+
 ✅ Recommendation: build with a suffix that includes a `+<digits>` prefix (then optionally `.HT450`), e.g.:
 
 - `+2636.HT450`
 - `+10523.HT450`
 
-## Build (Windows / Linux)
+---
+
+# Build (Windows / Linux)
 
 From repo root:
 - py utils/build.py --preset coreone --build-type release --version-suffix "+2636.HT450"
@@ -59,10 +64,7 @@ From repo root:
 
 - firmware.bbf
 
-## Tip for choosing a name: 
-
-- You can rename the .bbf file for convenience (e.g. COREONE_firmware_6.3.4_HT450.bbf).
-- The printer cares about the contents, not the filename.
+---
 
 ## Which binary should I flash? (boot vs noboot)
 
