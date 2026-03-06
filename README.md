@@ -2,6 +2,8 @@
 
 This repository is a **fork** of **Prusa Research – Prusa-Firmware-Buddy** with additional changes for the **Prusa CORE One** to enable **high-temperature operation (up to 450 °C)** and to keep the build reproducible.
 
+![Cover](https://github.com/user-attachments/assets/cd055461-2190-4792-8008-bf42d5a332fd)
+
 > ⚠️ **Safety disclaimer**
 >
 > High-temperature printing can damage hardware and can be hazardous if done incorrectly (overheating, connector damage, wiring insulation failure, fire risk).
