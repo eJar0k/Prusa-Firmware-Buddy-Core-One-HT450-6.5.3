@@ -163,11 +163,11 @@ enum ADCSensorState : char {
 typedef struct TempInfo {
   static constexpr float celsius_uninitialized = -1.0f;
 
-  uint16_t acc;
-  int16_t raw;
+  uint32_t acc;
+  int32_t raw;
   float celsius = celsius_uninitialized;
   inline void reset() { acc = 0; }
-  inline void sample(const uint16_t s) { acc += s; }
+  inline void sample(const uint32_t s) { acc += s; }
   inline void update() { raw = acc; }
 } temp_info_t;
 
@@ -244,9 +244,9 @@ typedef struct {
 } heater_watch_t;
 
 // Temperature sensor read value ranges
-typedef struct { int16_t raw_min, raw_max; } raw_range_t;
-typedef struct { int16_t mintemp, maxtemp; } celsius_range_t;
-typedef struct { int16_t raw_min, raw_max, mintemp, maxtemp; } temp_range_t;
+typedef struct { int32_t raw_min, raw_max; } raw_range_t;
+typedef struct { int32_t mintemp, maxtemp; } celsius_range_t;
+typedef struct { int32_t raw_min, raw_max, mintemp, maxtemp; } temp_range_t;
 
 #define THERMISTOR_ADC_RESOLUTION       1024           // 10-bit ADC .. shame to waste 12-bits of resolution on 32-bit
 #define THERMISTOR_ABS_ZERO_C           -273.15f       // bbbbrrrrr cold !
@@ -369,10 +369,10 @@ class Temperature {
         static millis_t next_bed_check_ms;
       #endif
       #ifdef BED_MINTEMP
-        static int16_t mintemp_raw_BED;
+        static int32_t mintemp_raw_BED;
       #endif
       #ifdef BED_MAXTEMP
-        static int16_t maxtemp_raw_BED;
+        static int32_t maxtemp_raw_BED;
       #endif
     #endif
 
@@ -382,19 +382,19 @@ class Temperature {
       #endif
       static millis_t next_heatbreak_check_ms;
       #ifdef HEATBREAK_MINTEMP
-        static int16_t mintemp_raw_HEATBREAK;
+        static int32_t mintemp_raw_HEATBREAK;
       #endif
       #ifdef HEATBREAK_MAXTEMP
-        static int16_t maxtemp_raw_HEATBREAK;
+        static int32_t maxtemp_raw_HEATBREAK;
       #endif
     #endif
 
     #if HAS_TEMP_BOARD
       #ifdef BOARD_MINTEMP
-        static int16_t mintemp_raw_BOARD;
+        static int32_t mintemp_raw_BOARD;
       #endif
       #ifdef BOARD_MAXTEMP
-        static int16_t maxtemp_raw_BOARD;
+        static int32_t maxtemp_raw_BOARD;
       #endif
     #endif
 
@@ -404,10 +404,10 @@ class Temperature {
       #endif
       static millis_t next_chamber_check_ms;
       #ifdef CHAMBER_MINTEMP
-        static int16_t mintemp_raw_CHAMBER;
+        static int32_t mintemp_raw_CHAMBER;
       #endif
       #ifdef CHAMBER_MAXTEMP
-        static int16_t maxtemp_raw_CHAMBER;
+        static int32_t maxtemp_raw_CHAMBER;
       #endif
     #endif
 
@@ -431,21 +431,21 @@ class Temperature {
      */
 
     #if HOTENDS
-      static float analog_to_celsius_hotend(const int raw, const uint8_t e);
+      static float analog_to_celsius_hotend(const int32_t raw, const uint8_t e);
     #endif
 
     #if HAS_HEATED_BED
-      static float analog_to_celsius_bed(const int raw);
+      static float analog_to_celsius_bed(const int32_t raw);
     #endif
     #if HAS_TEMP_CHAMBER
-      static float analog_to_celsius_chamber(const int raw);
+      static float analog_to_celsius_chamber(const int32_t raw);
     #endif
     #if HAS_TEMP_BOARD
-      static float analog_to_celsius_board(const int raw);
+      static float analog_to_celsius_board(const int32_t raw);
     #endif
 
     #if HAS_TEMP_HEATBREAK
-      static float analog_to_celsius_heatbreak(const int raw);
+      static float analog_to_celsius_heatbreak(const int32_t raw);
     #endif
 
     #if FAN_COUNT > 0

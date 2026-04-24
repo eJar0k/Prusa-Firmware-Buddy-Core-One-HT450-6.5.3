@@ -229,7 +229,7 @@ void RecordMarlinVariables() {
     static auto target_nozzle_should_record = RateLimiter<uint32_t>(1000 + 9);
     if (target_nozzle_should_record.check(ticks_ms())) {
         FOREACH_EXTRUDER() {
-            metric_record_custom(&target_nozzle, ",n=%i,a=%i value=%ii", e, e == active_extruder, thermalManager.degTargetHotend(e));
+            metric_record_custom(&target_nozzle, ",n=%i,a=%i value=%li", e, e == active_extruder, thermalManager.degTargetHotend(e));
         }
     }
 

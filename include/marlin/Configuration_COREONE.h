@@ -358,7 +358,7 @@
  *  2000 : 100k TDK NTC Chip Thermistor 100K NTCG104LH104JT1 thermistor (4k7 pullup) board thermistor
  *  2005 : 100k NTCG NTC Chip Thermistor (104NT-4-R025H42G)
  */
-#define TEMP_SENSOR_0 2005
+#define TEMP_SENSOR_0 1010
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
@@ -401,7 +401,7 @@
 // Above this temperature the heater will be switched off.
 // This can protect components from overheating, but NOT from shorts and failures.
 // (Use MINTEMP for thermistor short/failure protection.)
-#define HEATER_0_MAXTEMP 305
+#define HEATER_0_MAXTEMP 465
 #define HEATER_1_MAXTEMP 275
 #define HEATER_2_MAXTEMP 275
 #define HEATER_3_MAXTEMP 275

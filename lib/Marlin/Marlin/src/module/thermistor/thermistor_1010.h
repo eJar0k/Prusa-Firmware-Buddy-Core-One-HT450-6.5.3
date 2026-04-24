@@ -22,7 +22,7 @@
 #pragma once
 
 // Pt1000 with 1k0 pullup
-const short temptable_1010[][2] PROGMEM = {
+const int32_t temptable_1010[][2] PROGMEM = {
   PtLine(  0, 1000, 1000),
   PtLine( 25, 1000, 1000),
   PtLine( 50, 1000, 1000),
@@ -35,5 +35,11 @@ const short temptable_1010[][2] PROGMEM = {
   PtLine(225, 1000, 1000),
   PtLine(250, 1000, 1000),
   PtLine(275, 1000, 1000),
-  PtLine(300, 1000, 1000)
+  PtLine(300, 1000, 1000),
+  PtLine(325, 1000, 1000),
+  PtLine(350, 1000, 1000),
+  PtLine(375, 1000, 1000),
+  PtLine(400, 1000, 1000),
+  PtLine(425, 1000, 1000),
+  PtLine(450, 1000, 1000)
 };
