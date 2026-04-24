@@ -1,8 +1,8 @@
 # Prusa CORE One – HT450 Firmware (PT1000 / 450 °C)
 
-This repository is a **fork** of **Prusa Research – Prusa-Firmware-Buddy** with additional changes for the **Prusa CORE One** to enable **high-temperature operation (up to 450 °C)** and to keep the build reproducible.
-
 ![Cover](https://github.com/user-attachments/assets/cd055461-2190-4792-8008-bf42d5a332fd)
+
+This repository is a **fork** of **Prusa Research – Prusa-Firmware-Buddy** with additional changes for the **Prusa CORE One** to enable **high-temperature operation (up to 450 °C)** and to keep the build reproducible.
 
 > ⚠️ **Safety disclaimer**
 >
