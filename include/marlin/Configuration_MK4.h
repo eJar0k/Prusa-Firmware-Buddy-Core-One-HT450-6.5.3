@@ -74,7 +74,7 @@
 // User-specified version info of this build to display in [Pronterface, etc] terminal window during
 // startup. Implementation of an idea by Prof Braino to inform user that any changes made to this
 // build by the user have been successfully uploaded into firmware.
-#define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "(metacollin, pt1000 config)" // Who made the changes.
 #define SHOW_BOOTSCREEN
 
 /**
@@ -216,7 +216,55 @@
 //============================= Thermal Settings ============================
 //===========================================================================
 
-#define TEMP_SENSOR_0 2005
+/**
+ * --NORMAL IS 4.7kohm PULLUP!-- 1kohm pullup can be used on hotend sensor, using correct resistor and table
+ *
+ * Temperature sensors available:
+ *
+ *     0 : not used
+ *     1 : 100k thermistor - best choice for EPCOS 100k (4.7k pullup)
+ *     2 : 200k thermistor - ATC Semitec 204GT-2 (4.7k pullup)
+ *     3 : Mendel-parts thermistor (4.7k pullup)
+ *     4 : 10k thermistor !! do not use it for a hotend. It gives bad resolution at high temp. !!
+ *     5 : 100K thermistor - ATC Semitec 104GT-2/104NT-4-R025H42G (Used in ParCan & J-Head) (4.7k pullup)
+ *   501 : 100K Zonestar (Tronxy X3A) Thermistor
+ *     6 : 100k EPCOS - Not as accurate as table 1 (created using a fluke thermocouple) (4.7k pullup)
+ *     7 : 100k Honeywell thermistor 135-104LAG-J01 (4.7k pullup)
+ *    71 : 100k Honeywell thermistor 135-104LAF-J01 (4.7k pullup)
+ *     8 : 100k 0603 SMD Vishay NTCS0603E3104FXT (4.7k pullup)
+ *     9 : 100k GE Sensing AL03006-58.2K-97-G1 (4.7k pullup)
+ *    10 : 100k RS thermistor 198-961 (4.7k pullup)
+ *    11 : 100k beta 3950 1% thermistor (4.7k pullup)
+ *    12 : 100k 0603 SMD Vishay NTCS0603E3104FXT (4.7k pullup) (calibrated for Makibox hot bed)
+ *    13 : 100k Hisens 3950  1% up to 300°C for hotend "Simple ONE " & "Hotend "All In ONE"
+ *    15 : 100k thermistor calibration for JGAurora A5 hotend
+ *    20 : the PT100 circuit found in the Ultimainboard V2.x
+ *    60 : 100k Maker's Tool Works Kapton Bed Thermistor beta=3950
+ *    61 : 100k Formbot / Vivedino 3950 350C thermistor 4.7k pullup
+ *    66 : 4.7M High Temperature thermistor from Dyze Design
+ *    67 : 450C thermistor from SliceEngineering
+ *    70 : the 100K thermistor found in the bq Hephestos 2
+ *    75 : 100k Generic Silicon Heat Pad with NTC 100K MGB18-104F39050L32 thermistor
+ *
+ *       1k ohm pullup tables - This is atypical, and requires changing out the 4.7k pullup for 1k.
+ *                              (but gives greater accuracy and more stable PID)
+ *    51 : 100k thermistor - EPCOS (1k pullup)
+ *    52 : 200k thermistor - ATC Semitec 204GT-2 (1k pullup)
+ *    55 : 100k thermistor - ATC Semitec 104GT-2 (Used in ParCan & J-Head) (1k pullup)
+ *
+ *  1047 : Pt1000 with 4k7 pullup
+ *  1010 : Pt1000 with 1k pullup (non standard)
+ *   147 : Pt100 with 4k7 pullup
+ *   110 : Pt100 with 1k pullup (non standard)
+ *
+ *         Use these for Testing or Development purposes. NEVER for production machine.
+ *   998 : Dummy Table that ALWAYS reads 25°C or the temperature defined below.
+ *   999 : Dummy Table that ALWAYS reads 100°C or the temperature defined below.
+ *
+ *  2000 : 100k TDK NTC Chip Thermistor 100K NTCG104LH104JT1 thermistor (4k7 pullup) board thermistor
+ *  2005 : 100k NTCG NTC Chip Thermistor (104NT-4-R025H42G)
+ */
+#define TEMP_SENSOR_0 1010
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
@@ -253,14 +301,14 @@
 // Above this temperature the heater will be switched off.
 // This can protect components from overheating, but NOT from shorts and failures.
 // (Use MINTEMP for thermistor short/failure protection.)
-#define HEATER_0_MAXTEMP 305
+#define HEATER_0_MAXTEMP 450
 #define HEATER_1_MAXTEMP 275
 #define HEATER_2_MAXTEMP 275
 #define HEATER_3_MAXTEMP 275
 #define HEATER_4_MAXTEMP 275
 #define HEATER_5_MAXTEMP 275
 #define HEATER_MAXTEMP_SAFETY_MARGIN 15
-#define BED_MAXTEMP 125
+#define BED_MAXTEMP 140
 #define BED_MAXTEMP_SAFETY_MARGIN 5
 #define HEATBREAK_MAXTEMP 100
 #define CHAMBER_MAXTEMP 100
