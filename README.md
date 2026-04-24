@@ -1,138 +1,101 @@
-# Buddy
-This repository includes source code and firmware releases for the Original Prusa 3D printers based on the 32-bit ARM microcontrollers.
+# Prusa CORE One – HT450 Firmware (PT1000 / 450 °C)
 
-The currently supported models are:
-- Original Prusa MINI/MINI+
-- Original Prusa MK3.5
-- Original Prusa MK3.9
-- Original Prusa MK4
-- Original Prusa XL
-- Prusa CORE One
+This repository is a **fork** of **Prusa Research – Prusa-Firmware-Buddy** with additional changes for the **Prusa CORE One** to enable **high-temperature operation (up to 450 °C)** and to keep the build reproducible.
 
-## Getting Started
+![Cover](https://github.com/user-attachments/assets/cd055461-2190-4792-8008-bf42d5a332fd)
 
-### Requirements
+> ⚠️ **Safety disclaimer**
+>
+> High-temperature printing can damage hardware and can be hazardous if done incorrectly (overheating, connector damage, wiring insulation failure, fire risk).
+> You are responsible for validating your full hardware setup (heater, wiring, connectors, fuses/PSU, sensor wiring, thermal runaway protection, airflow).
+> This firmware is provided **as-is**, without warranty. Use at your own risk.
 
-- Python 3.8 or newer
-- system installation of Python's `requests` package (use either pip or your system package manager)
+---
 
-### Cloning this repository
+## What this fork changes (high level)
 
-Run `git clone https://github.com/prusa3d/Prusa-Firmware-Buddy.git`.
+- Enables/extends the nozzle temperature range for **CORE One** to **0–450 °C** (intended for PT1000-based setups).
+- Integrates and aligns upstream code required to build cleanly (CMake/Marlin sync).
+- Includes multiple **build fixes** discovered during integration (missing sources, link fixes, include paths).
+- Keeps the project buildable using `utils/build.py` (toolchain auto-download).
 
-### Building (on all platforms, without an IDE)
+> Note: If you flash this firmware while still using the **original hotend sensor** (not PT1000), temperature readings may be inaccurate and/or safety logic may not behave as expected. Only proceed if you understand the consequences and have verified the sensor chain.
 
-Run `python utils/build.py`. The binaries are then going to be stored under `./build/products`.
+---
 
-- Without any arguments, it will build a release version of the firmware for all supported printers and bootloader settings.
-- Use `--build-type` to select build configurations to be built (`debug`, `release`).
-- Use `--preset` to select for which printers the firmware should be built.
-- By default, it will build the firmware in "prerelease mode" set to `beta`. You can change the prerelease using `--prerelease alpha`, or use `--final` to build a final version of the firmware.
-- Use `--host-tools` to include host tools in the build (`png2font`, ...)
-- Find more options using the `--help` flag!
+## Credits / Acknowledgements
 
-#### Examples:
+- **Upstream (Prusa Research):** https://github.com/prusa3d/Prusa-Firmware-Buddy  
+- **High-temp groundwork (metacollin):** https://github.com/metacollin/Prusa-Firmware-Buddy  
 
-Build the firmware for MINI and XL in `debug` mode:
+This repo builds on the above work. My contributions are primarily the **CORE One HT450 adjustments** and the **integration/build fixes** required to produce working binaries.
 
-```bash
-python utils/build.py --preset mini,xl --build-type debug
-```
+---
 
-Build the firmware for MINI using a custom version of gcc-arm-none-eabi (available in `$PATH`) and use `Make` instead of `Ninja` (not recommended):
+## Important: Version suffix and PrusaSlicer / Prusa Connect “print host” issues
 
-```bash
-python utils/build.py --preset mini --toolchain cmake/AnyGccArmNoneEabi.cmake --generator 'Unix Makefiles'
-```
+- Some setups validate the printer firmware “version string” when sending jobs.  
+- If the suffix format is unexpected, you may get **print host / upload / send-to-printer errors**.
 
-#### Windows 10 troubleshooting
+![Fehlermeldung](https://github.com/user-attachments/assets/345394b0-c230-4b4c-9e30-fc70c107f82a)
 
-If you have python installed and in your PATH but still getting cmake error `Python3 not found.` Try running python and python3 from cmd. If one of it opens Microsoft Store instead of either opening python interpreter or complaining `'python3' is not recognized as an internal or external command,
-operable program or batch file.` Open `manage app execution aliases` and disable `App Installer` association with `python.exe` and `python3.exe`.
 
-### Development
+✅ Recommendation: build with a suffix that includes a `+<digits>` prefix (then optionally `.HT450`), e.g.:
 
-The build process of this project is driven by CMake and `build.py` is just a high-level wrapper around it. As most modern IDEs support some kind of CMake integration, it should be possible to use almost any editor for development. Below are some documents describing how to setup some popular text editors.
+- `+2636.HT450`
+- `+10523.HT450`
 
-- [Visual Studio Code](doc/editor/vscode.md)
-- [Vim](doc/editor/vim.md)
-- [Eclipse, STM32CubeIDE](doc/editor/stm32cubeide.md)
-- [Other LSP-based IDEs (Atom, Sublime Text, ...)](doc/editor/lsp-based-ides.md)
+---
 
-#### Contributing
+# Build (Windows / Linux)
 
-If you want to contribute to the codebase, please read the [Contribution Guidelines](doc/contributing.md).
+## From repo root:
+- py utils/build.py --preset coreone --build-type release --version-suffix "+2636.HT450"
 
-#### XL and Puppies
+## Build outputs are usually under:
 
-With the XL, the situation gets a bit more complex. The firmware of XLBuddy contains firmwares for the puppies (Dwarf and Modularbed) to flash them when necessary. We support several ways of dealing with those firmwares when developing:
+- build/coreone_release_boot/
+- build/coreone_release_noboot/
 
-1. Build Dwarf/Modularbed firmware automatically and flash it on startup by XLBuddy (the default)
-    - The Dwarf & ModularBed firmware will be built from this repo.
-    - The puppies are going to be flashed on startup by the XLBuddy. The puppies have to be running the [Puppy Bootloader](http://github.com/prusa3d/Prusa-Bootloader-Puppy).
+## Look for a file named similar to:
 
-2. Build Dwarf/Modularbed from a given source directory and flash it on startup by XLBuddy.
-    - Specify `DWARF_SOURCE_DIR`/`MODULARBED_SOURCE_DIR` CMake cache variable with the local repo you want to use.
-    - Example below would build modularbed's firmware from /Projects/Prusa-Firmware-Buddy-ModularBed and include it in the xlBuddy firmware.
-    ```
-    cmake .. --preset xl_release_boot -DMODULARBED_SOURCE_DIR=/Projects/Prusa-Firmware-Buddy-ModularBed
-    ```
-    - You can also specify the build directory you want to use:
-    ```
-    cmake .. --preset xl_release_boot \
-        -DMODULARBED_SOURCE_DIR=/Projects/Prusa-Firmware-Buddy-ModularBed  \
-        -DMODULARBED_BINARY_DIR=/Projects/Prusa-Firmware-Buddy-ModularBed/build
-    ```
-3. Use pre-built Dwarf/Modularbed firmware and flash it on startup by xlBuddy
-    - Specify the location of the .bin file with `DWARF_BINARY_PATH`/`MODULARBED_BINARY_PATH`.
-    - For example
-    ```
-    cmake .. --preset xl_release_boot -DDWARF_BINARY_PATH=/Downloads/dwarf-4.4.0-boot.bin
-    ```
+- firmware.bbf
 
-4. Do not include any puppy firmware, and do not flash the puppies by XLBuddy.
-    ```
-    -DENABLE_PUPPY_BOOTLOAD=NO
-    ```
-    - With the `ENABLE_PUPPY_BOOTLOAD` set to false, the project will disable Puppy flashing & interaction with Puppy bootloaders.
-    - It is up to you to flash the correct firmware to the puppies (noboot variant).
+---
+# Flash Firmware
 
-5. Keep bootloaders but do not write firmware on boot.
-    ```
-    -DPUPPY_SKIP_FLASH_FW=YES
-    ```
-    - With the `PUPPY_SKIP_FLASH_FW` set to true, the project will disable Puppy flashing on boot.
-    - You can keep other puppies that are not debugged in the same state as before.
-    - Use puppy build config with bootloaders (e.g. `xl-dwarf_debug_boot`) on one or more puppies.
-    - Recommend breakpoint at the end of `puppy_task_body()` to prevent buddy from resetting the puppy immediately when puppy stops on breakpoint.
+## Unsigned firmware / flashing note
 
-See /ProjectOptions.cmake for more information about those cache variables.
+- By default, developer builds may be unsigned (depending on your build configuration).
+- Many devices require enabling developer/service procedures (and sometimes breaking a seal) before accepting unsigned firmware.
+- Proceed only if you understand the implications.
 
-#### Running tests
+![Siegel](https://github.com/user-attachments/assets/2333b634-ed8b-4fc4-82ad-481ec49b7819)
 
-```bash
-mkdir build-tests
-cd build-tests
-cmake .. -DBOARD=BUDDY
-make tests
-ctest .
-```
 
-The simplest way to debug (step through) a test is to specify CMAKE_BUILD_TYPE when configuring `cmake -DCMAKE_BUILD_TYPE=Debug ..` , build it with `make tests` as previously stated and then run the test with `gdb <path to test binary>` e.g. `gdb tests/unit/configuration_store/eeprom_unit_tests`.
+## Which binary should I flash? (boot vs noboot)
 
-## Flashing Custom Firmware
+- I was only able to successfully flash the modified firmware with the “boot” version.
+- In practice, flashing depends on your device state and constraints (e.g., service/dev mode, seal, signing).
+- If you are unsure: start with noboot.
+- You must confirm the unsigned firmware with “ignore” using the side dial.
 
-To install custom firmware, you have to break the appendix on the board. Learn how to in the following article https://help.prusa3d.com/article/zoiw36imrs-flashing-custom-firmware.
-
-## Feedback
-
-- [Feature Requests from Community](https://github.com/prusa3d/Prusa-Firmware-Buddy/labels/feature%20request)
-
-## Credits
-
-- [Marlin](https://marlinfw.org/) - 3D printing core driver
-- [Klipper](https://www.klipper3d.org/) - input shaper code based on Klipper
+![Ignore](https://github.com/user-attachments/assets/1e54020e-2029-4d04-a9fb-67006b91533a)
+  
+---
+# IMPORTANT
 
 ## License
 
-The firmware source code is licensed under the GNU General Public License v3.0 and the graphics and design are licensed under Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0). Fonts are licensed under different license (see [LICENSE](LICENSE.md)).
+- This repository follows the upstream licensing of Prusa-Firmware-Buddy.
+- See the upstream LICENSE file(s) and all included third-party notices.
+- Nothing here overrides upstream license terms.
+
+## Support / Issues
+
+If you open issues, please include:
+- Exact printer model (CORE One)
+- Your firmware version string (shown in menu)
+- Whether you flashed boot or noboot
+- Whether you use PT1000 (and how it’s wired)
+- Full build log snippet around the error (if build-related)
