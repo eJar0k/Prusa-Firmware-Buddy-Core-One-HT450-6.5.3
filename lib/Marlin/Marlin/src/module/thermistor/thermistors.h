@@ -52,6 +52,9 @@
 #if ANY_THERMISTOR_IS(55) // beta25 = 4267 K, R25 = 100 kOhm, Pull-up = 1 kOhm, "ATC Semitec 104GT-2 (Used on ParCan)"
   #include "thermistor_55.h"
 #endif
+#if ANY_THERMISTOR_IS(1010) // Pt1000 with 1k pullup, op-amp amplified (HT450)
+  #include "thermistor_1010.h"
+#endif
 #if ANY_THERMISTOR_IS(2000) // 100k TDK NTC Chip Thermistor NTCG104LH104JT1 with 4k7 pullup
   #include "thermistor_2000.h"
 #endif
