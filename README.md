@@ -70,17 +70,10 @@ This repo builds on the above work. My contributions are primarily the **CORE On
 - Many devices require enabling developer/service procedures (and sometimes breaking a seal) before accepting unsigned firmware.
 - Proceed only if you understand the implications.
 
-<<<<<<< HEAD
-#### Running tests
-See the detailed testing guide in our [comprehensive testing guide].
-
-[comprehensive testing guide]: tests/unit/README.md
-=======
 ![Siegel](https://github.com/user-attachments/assets/2333b634-ed8b-4fc4-82ad-481ec49b7819)
 
 
 ## Which binary should I flash? (boot vs noboot)
->>>>>>> 4a58a8013 (README: Update for 6.4.0 port)
 
 - I was only able to successfully flash the modified firmware with the “boot” version.
 - In practice, flashing depends on your device state and constraints (e.g., service/dev mode, seal, signing).
